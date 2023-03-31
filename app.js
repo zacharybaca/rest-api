@@ -1,5 +1,7 @@
 "use strict";
 
+//NEXT STEP: Define Data Models
+
 // load modules
 const express = require("express");
 const morgan = require("morgan");
