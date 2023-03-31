@@ -12,18 +12,35 @@ module.exports = (sequelize) => {
       title: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: {
+          msg: "The course title you entered already exists",
+        },
+        validate: {
+          notNull: {
+            msg: 'Please provide a value for "title"',
+          },
+          notEmpty: {
+            msg: 'Please provide a value for "title"',
+          },
+        },
       },
       description: {
         type: DataTypes.TEXT,
         allowNull: false,
+        validate: {
+          notNull: {
+            msg: 'Please provide a value for "description"',
+          },
+          notEmpty: {
+            msg: 'Please provide a value for "description"',
+          },
+        },
       },
       estimatedTime: {
         type: DataTypes.STRING,
-        allowNull: false,
       },
       materialsNeeded: {
         type: DataTypes.STRING,
-        allowNull: false,
       },
     },
     { sequelize }

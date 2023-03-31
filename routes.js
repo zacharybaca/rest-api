@@ -28,8 +28,20 @@ router.get(
 router.post(
   "/users",
   asyncHandler(async (req, res) => {
-    await User.create(req.body);
-    res.status(201).setHeader("Location", "/").end();
+    try {
+      await User.create(req.body);
+      res.status(201).setHeader("Location", "/").end();
+    } catch (error) {
+      if (
+        error.name === "SequelizeValidationError" ||
+        error.name === "SequelizeUniqueConstraintError"
+      ) {
+        const errors = error.errors.map((err) => err.message);
+        res.status(400).json({ errors });
+      } else {
+        throw error;
+      }
+    }
   })
 );
 
@@ -54,14 +66,26 @@ router.get(
 router.get(
   "/courses/:id",
   asyncHandler(async (req, res) => {
-    const course = await Course.findByPk(req.params.id, {
-      include: [
-        {
-          model: User,
-        },
-      ],
-    });
-    res.json(course).status(200);
+    try {
+      const course = await Course.findByPk(req.params.id, {
+        include: [
+          {
+            model: User,
+          },
+        ],
+      });
+      res.json(course).status(200);
+    } catch (error) {
+      if (
+        error.name === "SequelizeValidationError" ||
+        error.name === "SequelizeUniqueConstraintError"
+      ) {
+        const errors = error.errors.map((err) => err.message);
+        res.status(400).json({ errors });
+      } else {
+        throw error;
+      }
+    }
   })
 );
 
@@ -69,8 +93,20 @@ router.get(
 router.post(
   "/courses",
   asyncHandler(async (req, res) => {
-    const course = await Course.create(req.body);
-    res.status(201).setHeader("Location", `/courses/${course.id}`).end();
+    try {
+      const course = await Course.create(req.body);
+      res.status(201).setHeader("Location", `/courses/${course.id}`).end();
+    } catch (error) {
+      if (
+        error.name === "SequelizeValidationError" ||
+        error.name === "SequelizeUniqueConstraintError"
+      ) {
+        const errors = error.errors.map((err) => err.message);
+        res.status(400).json({ errors });
+      } else {
+        throw error;
+      }
+    }
   })
 );
 
@@ -79,8 +115,19 @@ router.put(
   "/courses/:id",
   asyncHandler(async (req, res) => {
     const course = await Course.findByPk(req.params.id);
-    await course.update(req.body);
-    res.status(204).end();
+    if (course) {
+      if (!req.body.title || !req.body.description) {
+        res
+          .status(400)
+          .json({ message: "Please give a title and description" })
+          .end();
+      } else {
+        await course.update(req.body);
+        res.status(204).end();
+      }
+    } else {
+      res.status(404).json({ message: "Course not found" }).end();
+    }
   })
 );
 
@@ -88,9 +135,21 @@ router.put(
 router.delete(
   "/courses/:id",
   asyncHandler(async (req, res) => {
-    const course = await Course.findByPk(req.params.id);
-    await course.destroy();
-    res.status(204).end();
+    try {
+      const course = await Course.findByPk(req.params.id);
+      await course.destroy();
+      res.status(204).end();
+    } catch (error) {
+      if (
+        error.name === "SequelizeValidationError" ||
+        error.name === "SequelizeUniqueConstraintError"
+      ) {
+        const errors = error.errors.map((err) => err.message);
+        res.status(400).json({ errors });
+      } else {
+        throw error;
+      }
+    }
   })
 );
 module.exports = router;
