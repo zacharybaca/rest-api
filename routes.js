@@ -1,5 +1,6 @@
 const express = require("express");
 const { asyncHandler } = require("./middleware/async-handler");
+const { authenticateUser } = require("./middleware/auth-user");
 const { User, Course } = require("./models");
 
 // Construct a router instance.
@@ -10,15 +11,16 @@ const router = express.Router();
 // Route that returns the currently authenticated user.
 router.get(
   "/users",
+  authenticateUser,
   asyncHandler(async (req, res) => {
-    const user = await User.findByPk(1);
+    const user = req.currentUser;
 
     res
       .json({
         firstName: user.firstName,
         lastName: user.lastName,
         emailAddress: user.emailAddress,
-        password: user.password,
+        confirmedPassword: user.confirmedPassword,
       })
       .status(200);
   })
@@ -92,6 +94,7 @@ router.get(
 // Route that creates a new course, sets the Location header to the URI for the course, and returns no content.
 router.post(
   "/courses",
+  authenticateUser,
   asyncHandler(async (req, res) => {
     try {
       const course = await Course.create(req.body);
@@ -113,6 +116,7 @@ router.post(
 // Route that updates a course and returns no content.
 router.put(
   "/courses/:id",
+  authenticateUser,
   asyncHandler(async (req, res) => {
     const course = await Course.findByPk(req.params.id);
     if (course) {
@@ -134,6 +138,7 @@ router.put(
 // Route that deletes a course and returns no content.
 router.delete(
   "/courses/:id",
+  authenticateUser,
   asyncHandler(async (req, res) => {
     try {
       const course = await Course.findByPk(req.params.id);
@@ -147,7 +152,7 @@ router.delete(
         const errors = error.errors.map((err) => err.message);
         res.status(400).json({ errors });
       } else {
-        throw error;
+        res.status(404).json({ message: "Course not found" }).end();
       }
     }
   })
