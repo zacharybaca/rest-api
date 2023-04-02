@@ -13,10 +13,7 @@ exports.authenticateUser = async (req, res, next) => {
     });
 
     if (user) {
-      const authenticated = bcrypt.compareSync(
-        credentials.pass,
-        user.confirmedPassword
-      );
+      const authenticated = bcrypt.compareSync(credentials.pass, user.password);
 
       if (authenticated) {
         // Store User on Request Object
