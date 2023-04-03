@@ -2,6 +2,7 @@
 
 // load modules
 const express = require("express");
+const cors = require("cors");
 const morgan = require("morgan");
 const { sequelize } = require("./models");
 const routes = require("./routes");
@@ -15,6 +16,9 @@ const app = express();
 
 // setup request body JSON parsing
 app.use(express.json());
+
+// Cors Middleware
+app.use(cors());
 
 // Add routes
 app.use("/api", routes);
