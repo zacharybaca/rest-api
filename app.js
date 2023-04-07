@@ -18,7 +18,12 @@ const app = express();
 app.use(express.json());
 
 // Cors Middleware
-app.use(cors());
+app.use(
+  cors({
+    credentials: true,
+    origin: "http://localhost:3000",
+  })
+);
 
 // Add routes
 app.use("/api", routes);
