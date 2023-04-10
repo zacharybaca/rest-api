@@ -21,6 +21,7 @@ router.get(
         lastName: user.lastName,
         emailAddress: user.emailAddress,
         confirmedPassword: user.confirmedPassword,
+        id: user.id,
       })
       .status(200);
   })
@@ -74,6 +75,14 @@ router.get(
           {
             model: User,
           },
+        ],
+        attributes: [
+          "id",
+          "title",
+          "description",
+          "estimatedTime",
+          "materialsNeeded",
+          "userId",
         ],
       });
       res.json(course).status(200);
